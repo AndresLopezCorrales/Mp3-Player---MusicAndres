@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane fx:id="panePrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="373.0" prefWidth="267.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.musican.controller.PrincipalController">
+   <children>
+      <GridPane layoutX="35.0" layoutY="310.0" prefHeight="29.0" prefWidth="200.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button fx:id="previousButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="72.0" text="Previous" />
+            <Button fx:id="nextButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" text="Next" GridPane.columnIndex="2" />
+            <Button fx:id="playButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#playPause" prefHeight="25.0" prefWidth="68.0" text="Play" GridPane.columnIndex="1" />
+         </children>
+      </GridPane>
+      <ProgressBar fx:id="progressSong" layoutX="16.0" layoutY="276.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+      <ImageView fx:id="imageSong" fitHeight="206.0" fitWidth="206.0" layoutX="32.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+         <image>
+            <Image url="@../../../images/nsqk/Lovelanguage.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="songTitle" alignment="CENTER" layoutY="249.0" prefHeight="17.0" prefWidth="267.0" text="Song" />
+      <Label fx:id="artistName" alignment="CENTER" contentDisplay="CENTER" layoutX="-2.0" layoutY="14.0" prefHeight="17.0" prefWidth="111.0" text="Artist" />
+      <ComboBox fx:id="comboArtist" layoutX="109.0" layoutY="10.0" onAction="#getValueFromComboBoxArtist" prefHeight="25.0" prefWidth="66.0" />
+      <ComboBox fx:id="comboSongs" layoutX="186.0" layoutY="10.0" onAction="#getValueComboBoxSongs" prefHeight="25.0" prefWidth="67.0" />
+   </children>
+</AnchorPane>

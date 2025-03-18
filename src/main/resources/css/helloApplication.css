@@ -1,0 +1,7 @@
+.root{
+    -fx-background-color: "black";
+}
+
+#welcomeText{
+    -fx-text-fill:"red";
+}

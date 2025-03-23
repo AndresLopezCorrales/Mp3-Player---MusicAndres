@@ -123,6 +123,12 @@ public class PrincipalController {
             String pathMp3 = getClass().getResource("/" + selectAudioToBePlayed()).toString();
             media = new Media(pathMp3);
             mediaPlayer = new MediaPlayer(media);
+
+            mediaPlayer.setOnEndOfMedia(() -> {
+                System.out.println("La canción ha terminado000.");
+                nextSong();
+            });
+
             mediaPlayer.setOnReady(() -> {
                 mediaPlayer.play();
             });
@@ -179,7 +185,6 @@ public class PrincipalController {
             artistToReturn = selectedArtist;
         }
 
-        //System.out.println(artistToReturn);
         return artistToReturn;
     }
 
@@ -220,12 +225,16 @@ public class PrincipalController {
 
                 comboSongs.getItems().addAll(songs);
 
+
                 if (isFirstTime2 && !songs.isEmpty()){
                     //isArtistSelected = true;
                     comboSongs.setValue(songs.getLast());
                     songTitle.setText(songs.getLast());
                     isFirstTime2 = false;
+                }else{
+                    comboSongs.setValue(comboSongs.getItems().getFirst());
                 }
+
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -343,6 +352,12 @@ public class PrincipalController {
                 String pathMp3 = getClass().getResource("/" + selectAudioToBePlayed()).toString();
                 media = new Media(pathMp3);
                 mediaPlayer = new MediaPlayer(media);
+
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    System.out.println("La canción ha terminado.");
+                    nextSong();
+                });
+
                 mediaPlayer.setOnReady(() -> {
                     mediaPlayer.play();
                 });
@@ -358,6 +373,55 @@ public class PrincipalController {
             }else if (status == MediaPlayer.Status.PLAYING){
                 mediaPlayer.pause();
             }
+        }
+    }
+
+    public void nextSong (){
+        String currentSong = comboSongs.getValue();
+        int currentIndex = comboSongs.getItems().indexOf(currentSong);
+
+        String currentArtist = comboArtist.getValue();
+        int currentArtistIndex = comboArtist.getItems().indexOf(currentArtist);
+
+        if (currentIndex < comboSongs.getItems().size() - 1) {
+            // Hay una siguiente canción
+            comboSongs.setValue(comboSongs.getItems().get(currentIndex + 1));
+            setOnActionComboSong(); // Reproducir la siguiente canción
+        } else {
+            //Es el último artista, ir al primer artista y reproducir su primer canción
+            if (currentArtistIndex == comboArtist.getItems().size() - 1 ){
+                comboArtist.setValue(comboArtist.getItems().getFirst());
+            }else {
+                comboArtist.setValue(comboArtist.getItems().get(currentArtistIndex + 1));
+            }
+            comboSongs.setValue(comboSongs.getItems().getFirst());
+            setOnActionComboSong();
+        }
+
+    }
+
+    public void previousSong(){
+        String currentSong = comboSongs.getValue();
+        int currentIndex = comboSongs.getItems().indexOf(currentSong);
+
+        String currentArtist = comboArtist.getValue();
+        int currentArtistIndex = comboArtist.getItems().indexOf(currentArtist);
+
+        if (currentIndex > 0) {
+            // Hay una canción anterior
+            comboSongs.setValue(comboSongs.getItems().get(currentIndex - 1));
+            setOnActionComboSong(); // Reproducir la canción anterior
+        } else {
+            //El artista no es el primero, ve al anterior
+            if (currentArtistIndex > 0) {
+                comboArtist.setValue(comboArtist.getItems().get(currentArtistIndex - 1));
+            } else {
+                //Estás en el primer artista, ve al último artista
+                comboArtist.setValue(comboArtist.getItems().getLast());
+            }
+            // Seleccionar la última canción del nuevo artista
+            comboSongs.setValue(comboSongs.getItems().getLast());
+            setOnActionComboSong(); // Reproducir la última canción del nuevo artista
         }
     }
 

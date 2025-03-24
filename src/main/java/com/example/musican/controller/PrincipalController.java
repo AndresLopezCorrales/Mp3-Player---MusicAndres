@@ -2,16 +2,13 @@ package com.example.musican.controller;
 
 import com.example.musican.model.DatabaseConnection;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.LinkedList;
@@ -19,7 +16,7 @@ import java.util.LinkedList;
 public class PrincipalController {
 
     @FXML
-    ImageView imageSong;
+    ImageView imageSong; //Ya
 
     @FXML
     ComboBox <String> comboArtist, comboSongs; //Ya
@@ -28,14 +25,12 @@ public class PrincipalController {
     Label artistName, songTitle; //Ya
 
     @FXML
-    ProgressBar progressSong;
+    Button previousButton, playButton, nextButton; //Ya
 
     @FXML
-    Button previousButton, playButton, nextButton;
+    Slider sliderSong;
 
     String mp3Path;
-
-    String imageOfTheSong;
 
     Media media;
 
@@ -46,47 +41,6 @@ public class PrincipalController {
     //Boolean to get the first ArtistName and Song when the app is launched
     boolean isFirstTime = true;
     boolean isFirstTime2 = true;
-
-    //Prove that images are loading correctly from the database
-    @FXML
-    public void loadSongImage() {
-        String query = "SELECT image FROM song WHERE song_id = 1";
-
-        try (Connection conn = DatabaseConnection.connect();
-             PreparedStatement statement = conn.prepareStatement(query)) {
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    // Obtener el BLOB como InputStream
-                    InputStream inputStream = resultSet.getBinaryStream("image");
-
-                    System.out.println(inputStream);
-
-                    if (inputStream != null) {
-                        // Convertir InputStream a Image
-                        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                        Image image = new Image(bufferedInputStream);
-
-                        if (image.isError()) {
-                            System.out.println("Error al cargar la imagen");
-                        } else {
-                            System.out.println("Imagen cargada correctamente");
-                        }
-
-
-                        // Establecer la imagen en el ImageView
-                        imageSong.setImage(image);
-                        System.out.println("Imagen cargada correctamente.");
-                    } else {
-                        //ystem.out.println("No se encontró ninguna imagen para la canción con ID: " + songId);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error al cargar la imagen: " + e.getMessage());
-        }
-    }
 
     //Initialize functions when FXML file instance the controller
     @FXML
@@ -114,29 +68,49 @@ public class PrincipalController {
 
     }
 
+    public void mediaToBePlayed(){
+        String pathMp3 = getClass().getResource("/" + selectAudioToBePlayed()).toString();
+        media = new Media(pathMp3);
+        mediaPlayer = new MediaPlayer(media);
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            System.out.println("La canción ha terminado000.");
+            nextSong();
+        });
+
+        sliderSong.setMin(0);
+
+        mediaPlayer.setOnReady(() -> {
+            Duration totalDuration = media.getDuration();
+            sliderSong.setMax(totalDuration.toSeconds());
+            mediaPlayer.play();
+        });
+
+        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            if (!sliderSong.isValueChanging()) { // Evitar conflictos al mover el Slider manualmente
+                sliderSong.setValue(newValue.toSeconds());
+            }
+
+
+        });
+
+        // Mover la reproducción cuando el usuario mueve el Slider
+        sliderSong.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (sliderSong.isValueChanging()) { // Solo si el usuario está moviendo el Slider
+                mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+            }
+        });
+    }
+
     public void setOnActionComboSong(){
         if (!isArtistSelected){
             setLabelForSong();
             selectAudioToBePlayed();
             changeImageView();
-
-            String pathMp3 = getClass().getResource("/" + selectAudioToBePlayed()).toString();
-            media = new Media(pathMp3);
-            mediaPlayer = new MediaPlayer(media);
-
-            mediaPlayer.setOnEndOfMedia(() -> {
-                System.out.println("La canción ha terminado000.");
-                nextSong();
-            });
-
-            mediaPlayer.setOnReady(() -> {
-                mediaPlayer.play();
-            });
+            mediaToBePlayed();
         }
         isArtistSelected = false;
     }
-
-
 
     public void insertArtistsIntoComboBoxArtist(){
 
@@ -349,19 +323,7 @@ public class PrincipalController {
         if (mediaPlayer == null){
 
             try {
-                String pathMp3 = getClass().getResource("/" + selectAudioToBePlayed()).toString();
-                media = new Media(pathMp3);
-                mediaPlayer = new MediaPlayer(media);
-
-                mediaPlayer.setOnEndOfMedia(() -> {
-                    System.out.println("La canción ha terminado.");
-                    nextSong();
-                });
-
-                mediaPlayer.setOnReady(() -> {
-                    mediaPlayer.play();
-                });
-
+                mediaToBePlayed();
             }catch(Exception e){
                 e.printStackTrace();
             }
@@ -377,6 +339,7 @@ public class PrincipalController {
     }
 
     public void nextSong (){
+
         String currentSong = comboSongs.getValue();
         int currentIndex = comboSongs.getItems().indexOf(currentSong);
 

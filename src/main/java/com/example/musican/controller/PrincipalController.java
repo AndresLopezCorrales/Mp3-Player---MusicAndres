@@ -1,19 +1,28 @@
 package com.example.musican.controller;
 
 import com.example.musican.model.DatabaseConnection;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.LinkedList;
 
 public class PrincipalController {
+
+
 
     @FXML
     ImageView imageSong; //Ya
@@ -25,7 +34,7 @@ public class PrincipalController {
     Label artistName, songTitle; //Ya
 
     @FXML
-    Button previousButton, playButton, nextButton; //Ya
+    Button previousButton, playButton, nextButton, insertSong; //Ya
 
     @FXML
     Slider sliderSong;
@@ -387,5 +396,26 @@ public class PrincipalController {
             setOnActionComboSong(); // Reproducir la última canción del nuevo artista
         }
     }
+
+
+    public void switchToInsertWindow() throws IOException {
+
+        // Load the FXML file for the second window
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/musican/insert.fxml"));
+        Parent root = loader.load();
+
+        // Create a new Stage (window)
+        Stage secondStage = new Stage();
+        secondStage.setTitle("Second Window");
+        secondStage.setScene(new Scene(root));
+
+        // Optional: Configure the new window (size, modality, etc.)
+        secondStage.setResizable(false);
+
+        secondStage.initModality(Modality.APPLICATION_MODAL);
+        secondStage.showAndWait();
+
+    }
+
 
 }
